@@ -1,1 +1,4 @@
-console.log(DataModel.loadAllItems())
+function main(inputItems) {
+	var receipt = new Receipt(inputItems)
+	receipt.getData()
+}

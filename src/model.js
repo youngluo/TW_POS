@@ -28,7 +28,7 @@ var DataModel = (function() {
 			_productItem('ITEM000002', '苹果', '斤', 5.50),
 			_productItem('ITEM000003', '荔枝', '斤', 15.00),
 			_productItem('ITEM000004', '电池', '个', 2.00),
-			_productItem('ITEM000005', '方便面', '袋', 4.50)
+			_productItem('ITEM000005', '羽毛球', '个', 1.00)
 		]
 	}
 
@@ -36,8 +36,10 @@ var DataModel = (function() {
 		return [
 			_promotionItem('BUY_TWO_GET_ONE_FREE', [
 				'ITEM000000',
-				'ITEM000001',
 				'ITEM000005'
+			]),
+			_promotionItem('A_FIVE_PERCENT_DISCOUNT', [
+				'ITEM000002'
 			])
 		]
 	}
