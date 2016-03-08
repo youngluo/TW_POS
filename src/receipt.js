@@ -1,20 +1,26 @@
-(function() {
+var Receipt = (function() {
 
-	var Receipt = function(inputData) {
-		this.inputData = inputData
+	var promotionItems = DataModel.loadPromotionItems(),
+		allItems = DataModel.loadAllItems(),
+		result = {},
+		_inputData
+
+	return {
+		getData: getData
 	}
 
-	_.extend(Receipt.prototype, {
-		_separateData: _separateData,
-		_mergeData: _mergeData,
-		getData: getData
-	})
+	function getData(inputData) {
+		_inputData = inputData
+		var mergedData = _mergeData()
+
+		PromotionHandler.getPromotionsData(mergedData, promotionItems, allItems)
+	}
 
 	function _separateData() {
 		var tempNormalItems = [],
 			tempSpecialItems = []
 
-		_.each(this.inputData, function(item) {
+		_.each(_inputData, function(item) {
 			if (item.indexOf('-') < 0) {
 				tempNormalItems.push(item)
 			} else {
@@ -29,7 +35,7 @@
 	}
 
 	function _mergeData() {
-		var newData = this._separateData(),
+		var newData = _separateData(),
 			mergedData = _.countBy(newData.normalItems)
 
 		_.each(newData.specialItems, function(item) {
@@ -37,23 +43,16 @@
 				newObj = {}
 
 			newObj[splitArr[0]] = _.parseInt(splitArr[1])
-			mergedData = _.mergeWith(mergedData, newObj, getSum)
-			splitArr = null
+			mergedData = _.mergeWith(mergedData, newObj, _getSum)
 		})
-
-		function getSum(targetValue, srcValue) {
-			if (targetValue) {
-				return targetValue + srcValue
-			}
-		}
 
 		return mergedData
 	}
 
-	function getData() {
-		console.info(this._mergeData())
+	function _getSum(targetValue, srcValue) {
+		if (targetValue) {
+			return targetValue + srcValue
+		}
 	}
-
-	window.Receipt = Receipt
 
 }())
