@@ -5,7 +5,7 @@ var DataModel = (function() {
 			barcode: barcode,
 			name: name,
 			unit: unit,
-			price: price.toFixed(2)
+			price: price
 		}
 	}
 

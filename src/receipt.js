@@ -2,7 +2,6 @@ var Receipt = (function() {
 
 	var promotionItems = DataModel.loadPromotionItems(),
 		allItems = DataModel.loadAllItems(),
-		result = {},
 		_inputData
 
 	return {
@@ -11,28 +10,26 @@ var Receipt = (function() {
 
 	function getData(inputData) {
 		_inputData = inputData
-		var mergedData = _mergeData()
 
-		PromotionHandler.getPromotionsData(mergedData, promotionItems, allItems)
-	}
+		var mergedData = _mergeData(),
+			orderInfo = OrderHandler.getOrder(mergedData, promotionItems, allItems),
+			allTotal = 0,
+			allSave = 0,
+			orderItems = []
 
-	function _separateData() {
-		var tempNormalItems = [],
-			tempSpecialItems = []
-
-		_.each(_inputData, function(item) {
-			if (item.indexOf('-') < 0) {
-				tempNormalItems.push(item)
-			} else {
-				tempSpecialItems.push(item)
-			}
+		_.each(orderInfo, function(orderItem) {
+			orderItems.push(orderItem)
+			allTotal += orderItem.total
+			allSave += orderItem.save
 		})
 
 		return {
-			normalItems: tempNormalItems,
-			specialItems: tempSpecialItems
+			orderItems: orderItems,
+			allTotal: allTotal,
+			allSave: allSave
 		}
 	}
+
 
 	function _mergeData() {
 		var newData = _separateData(),
@@ -52,6 +49,24 @@ var Receipt = (function() {
 	function _getSum(targetValue, srcValue) {
 		if (targetValue) {
 			return targetValue + srcValue
+		}
+	}
+
+	function _separateData() {
+		var tempNormalItems = [],
+			tempSpecialItems = []
+
+		_.each(_inputData, function(item) {
+			if (item.indexOf('-') < 0) {
+				tempNormalItems.push(item)
+			} else {
+				tempSpecialItems.push(item)
+			}
+		})
+
+		return {
+			normalItems: tempNormalItems,
+			specialItems: tempSpecialItems
 		}
 	}
 
