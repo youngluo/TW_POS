@@ -40,14 +40,30 @@ var OrderHandler = (function() {
 	function _getPromoionType(counts, barcode) {
 		var type = 'none' //无优惠类型
 
-		_.each(_promotionItems, function(promotionObj) {
-			_.each(promotionObj.barcodes, function(promotionBarcode) {
-				if (barcode == promotionBarcode) {
-					type = promotionObj.type
-					return false
-				}
-			})
-		})
+		outerLoop:
+			for (var i in _promotionItems) {
+				var promotionObj = _promotionItems[i],
+					promotionBarcodes = promotionObj.barcodes
+
+				innerLoop:
+					for (var j in promotionBarcodes) {
+						promotionBarcode = promotionBarcodes[j]
+
+						if (barcode == promotionBarcode) {
+							type = promotionObj.type
+
+							/*
+							 * 如果为“买二赠一”优惠时，则跳出整个循环，
+							 * 否则跳出当前循环，以保证优惠冲突时，只享受“买二赠一”优惠
+							 */
+							if (type == 'BUY_TWO_GET_ONE_FREE') {
+								break outerLoop
+							} else {
+								break innerLoop
+							}
+						}
+					}
+			}
 
 		return type
 	}

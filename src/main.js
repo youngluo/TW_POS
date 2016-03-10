@@ -6,11 +6,15 @@ function main(inputItems) {
 	var startLine = '***<没钱赚商店>购物清单***\n',
 		gap = '----------------------\n',
 		endLine = '**********************',
-		orders = Receipt.getData(inputItems)
+		orders = Receipt.getData(inputItems),
+		allsave = orders.allSave.toFixed(2),
+		result = startLine + outputOrderInfo(orders.orderItems) + gap +
+		outputPromotionInfo(orders.promotionItems) + '总计：' + orders.allTotal.toFixed(2) + '(元)\n'
 
-	var result = startLine + outputOrderInfo(orders.orderItems) + gap +
-		outputPromotionInfo(orders.promotionItems) + '总计：' + orders.allTotal.toFixed(2) +
-		'(元)\n' + '节省：' + orders.allSave.toFixed(2) + '(元)\n' + endLine
+	if (allsave > 0) {
+		result += '节省：' + allsave + '(元)\n'
+	}
+	result += endLine
 
 	console.log(result)
 }

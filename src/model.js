@@ -39,7 +39,7 @@ var DataModel = (function() {
 				'ITEM000005'
 			]),
 			_promotionItem('A_FIVE_PERCENT_DISCOUNT', [
-				'ITEM000002'
+				'ITEM000002',
 			])
 		]
 	}
