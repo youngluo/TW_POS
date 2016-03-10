@@ -1,38 +1,54 @@
 var Receipt = (function() {
 
 	var promotionItems = DataModel.loadPromotionItems(),
-		allItems = DataModel.loadAllItems(),
-		_inputData
+		allItems = DataModel.loadAllItems()
 
 	return {
 		getData: getData
 	}
 
 	function getData(inputData) {
-		_inputData = inputData
+		var orderInfo = OrderHandler.getOrder(_mergeData(inputData), promotionItems, allItems)
+		return _statisticPromotionData(orderInfo)
+	}
 
-		var mergedData = _mergeData(),
-			orderInfo = OrderHandler.getOrder(mergedData, promotionItems, allItems),
-			allTotal = 0,
+	function _statisticPromotionData(orderInfo) {
+		var allTotal = 0,
 			allSave = 0,
-			orderItems = []
+			orderItems = [],
+			promotionItems = {}
 
 		_.each(orderInfo, function(orderItem) {
+			var type = orderItem.type,
+				tempObj = {}
+
 			orderItems.push(orderItem)
 			allTotal += orderItem.total
 			allSave += orderItem.save
+
+			//统计赠送类商品的优惠信息
+			if (type.indexOf('FREE') > -1) {
+				tempObj.name = orderItem.name
+				tempObj.promotionCounts = orderItem.promotionCounts
+				tempObj.unit = orderItem.unit
+				if (promotionItems[type]) {
+					promotionItems[type].push(tempObj)
+				} else {
+					promotionItems[type] = [tempObj]
+				}
+			}
 		})
 
 		return {
 			orderItems: orderItems,
+			promotionItems: promotionItems,
 			allTotal: allTotal,
 			allSave: allSave
 		}
 	}
 
-
-	function _mergeData() {
-		var newData = _separateData(),
+	function _mergeData(inputData) {
+		var newData = _separateData(inputData),
 			mergedData = _.countBy(newData.normalItems)
 
 		_.each(newData.specialItems, function(item) {
@@ -52,11 +68,11 @@ var Receipt = (function() {
 		}
 	}
 
-	function _separateData() {
+	function _separateData(inputData) {
 		var tempNormalItems = [],
 			tempSpecialItems = []
 
-		_.each(_inputData, function(item) {
+		_.each(inputData, function(item) {
 			if (item.indexOf('-') < 0) {
 				tempNormalItems.push(item)
 			} else {
